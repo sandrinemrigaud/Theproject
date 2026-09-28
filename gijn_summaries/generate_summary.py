@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Generate a GIJN masterclass YouTube summary from a video transcript.
 
+Produces a .docx (full archive layout) and a companion .txt file containing
+just the YouTube-ready block (5 title options + summary), ready to paste
+into the video's title/description fields.
+
 Usage:
     python generate_summary.py transcript.txt \
         --speaker "Thin Lei Win" \
@@ -17,7 +21,7 @@ import sys
 
 import anthropic
 
-from docx_writer import DEFAULT_CREDITS, build_docx
+from docx_writer import DEFAULT_CREDITS, build_docx, build_youtube_txt
 from style_guide import SUBMIT_SUMMARY_TOOL, SYSTEM_PROMPT
 from transcript_utils import load_transcript
 
@@ -40,6 +44,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output",
         help="Output .docx path (default: derived from the speaker's name)",
+    )
+    parser.add_argument(
+        "--txt-output",
+        help=(
+            "Output .txt path for the YouTube-ready block (title options + "
+            "summary). Default: same name as --output with '_youtube.txt'."
+        ),
     )
     parser.add_argument(
         "--credits",
@@ -98,7 +109,7 @@ def generate_summary(
 
     response = client.messages.create(
         model=model,
-        max_tokens=2000,
+        max_tokens=2500,
         system=SYSTEM_PROMPT,
         tools=[SUBMIT_SUMMARY_TOOL],
         tool_choice={"type": "tool", "name": "submit_summary"},
@@ -115,6 +126,11 @@ def generate_summary(
 def default_output_path(summary: dict) -> str:
     name = summary["speaker_name"].strip().replace(" ", "_")
     return f"{name}_summary.docx"
+
+
+def default_txt_output_path(docx_path: str) -> str:
+    base = docx_path[:-5] if docx_path.endswith(".docx") else docx_path
+    return f"{base}_youtube.txt"
 
 
 def main() -> None:
@@ -134,7 +150,10 @@ def main() -> None:
 
     credits = load_credits(args.credits)
     output_path = args.output or default_output_path(summary)
+    txt_output_path = args.txt_output or default_txt_output_path(output_path)
+
     build_docx(summary, credits, output_path)
+    build_youtube_txt(summary, credits, txt_output_path)
 
     if args.json_out:
         with open(args.json_out, "w", encoding="utf-8") as f:
@@ -142,8 +161,11 @@ def main() -> None:
 
     print(f"Format used: {summary['format']} ({summary['format_rationale']})")
     print(f"Proposed title: {summary['proposed_title']}")
-    print(f"YouTube title: {summary['youtube_title']}")
+    print("YouTube title options:")
+    for i, title in enumerate(summary["youtube_titles"], start=1):
+        print(f"  {i}. {title}")
     print(f"Saved summary to: {output_path}")
+    print(f"Saved YouTube text block to: {txt_output_path}")
 
 
 if __name__ == "__main__":

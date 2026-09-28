@@ -2,8 +2,11 @@
 
 Generates a YouTube-ready summary for a GIJN Masterclass video from its
 transcript, matching the existing editorial style used across the series
-(proposed title, summary, credits, then a YouTube-specific title/summary
-block).
+(proposed title, summary, credits, then a YouTube-specific titles/summary
+block). Produces both a `.docx` (full archive layout) and a plain `.txt`
+file with just the YouTube block, ready to paste into YouTube's title and
+description fields. The YouTube title comes as 5 distinct options to choose
+from, not a single suggestion.
 
 The tool automatically distinguishes two summary formats, modeled on the
 archive of past summaries:
@@ -15,7 +18,7 @@ archive of past summaries:
   mentioned in the talk.
 - **`in_conversation_with`** — masterclasses built around a high-profile
   guest (e.g. a Nobel laureate) whose name and authority are the draw.
-  Titles are thematic, and the YouTube title leads with the guest's name.
+  Titles are thematic, and the YouTube titles lead with the guest's name.
 
 The model decides which format fits based on the transcript, unless you
 force one with `--format`.
@@ -54,13 +57,22 @@ python generate_summary.py transcript.txt \
 
 - `--json-out summary.json` also dumps the raw structured summary, useful
   for reviewing or feeding into another tool before trusting the `.docx`.
+- `--txt-output path/to/file.txt` overrides where the plain-text YouTube
+  block is saved (default: same name as `--output` with `_youtube.txt`
+  instead of `.docx`).
 
 ## Output
 
-A `.docx` file mirroring the archive's layout: speaker name, proposed
-title, summary paragraphs, an optional featured quote with timestamps, the
-credits block, a `////` separator, then `YOUTUBE TITLE` / `YOUTUBE SUMMARY`
-and the credits block again.
+Two files are always generated:
+
+- **`.docx`** mirroring the archive's layout: speaker name, proposed title,
+  summary paragraphs, an optional featured quote with timestamps, the
+  credits block, a `////` separator, then `YOUTUBE TITLE OPTIONS` (5
+  numbered options) / `YOUTUBE SUMMARY`, and the credits block again.
+- **`.txt`** with just the YouTube block: the 5 title options, the summary,
+  the tools list (if any) and the credits — nothing else — so it can be
+  copy-pasted directly into YouTube's title/description fields without
+  opening Word.
 
 Always review the generated text before publishing — the model is grounded
 in the transcript but titles and framing are worth a human pass.

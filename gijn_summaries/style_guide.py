@@ -29,9 +29,9 @@ technique itself. Patterns seen in the archive: "Using Archives in \
 Investigative Reporting", "4 Tips to Investigate Food Insecurity", \
 "Investigating Health Harms from Corporations", "The Golden Rules of \
 Investigative Podcasts".
-- youtube_title: reinforces practicality and searchability. Often adds a \
+- youtube_titles: reinforce practicality and searchability. Often add a \
 phrase like "Tips and Tools for Journalists" or "Tips from [Name]", or \
-restates the topic with a clear benefit. The guest's name is optional and \
+restate the topic with a clear benefit. The guest's name is optional and \
 secondary here, e.g. "Reporting on Food Insecurity: Tips and Tools for \
 Journalists", "Producing Investigative Podcasts: Tips from Susanne Reber".
 
@@ -45,8 +45,18 @@ thesis, philosophy or reflection rather than a step-by-step tutorial.
 - proposed_title: a thematic statement capturing the guest's core argument, \
 formatted as "[Concept]: [framing] by [Name]", e.g. "Radical Collaboration: \
 The Antidote to Big Tech's Power by Maria Ressa".
-- youtube_title: leads with the guest's name for recognition and SEO, e.g. \
+- youtube_titles: lead with the guest's name for recognition and SEO, e.g. \
 "Maria Ressa on Radical Collaboration: Why It's the Antidote to Big Tech".
+
+## youtube_titles
+
+Always return exactly 5 distinct YouTube title options, ordered from \
+strongest to weakest, all following the format rules above (same format \
+family, same guest-name placement convention). Vary the hook, phrasing and \
+angle between the 5 -- do not just reword the same sentence; give the editor \
+genuinely different options to choose from (e.g. a benefit-led angle, a \
+curiosity-led angle, a name-led angle, a number/list angle, a quote-led \
+angle where relevant). Each title must stay accurate to the transcript.
 
 ## Summary prose rules (both formats)
 
@@ -85,7 +95,12 @@ the exact quoted text. Otherwise return null. Never fabricate timestamps.
 --- Example A (tips_and_tools, with a Tools section) ---
 Speaker: Thin Lei Win, lead reporter at Lighthouse Reports
 Proposed title: 4 Tips to Investigate Food Insecurity
-YouTube title: Reporting on Food Insecurity: Tips and Tools for Journalists
+YouTube titles (5 options):
+1. Reporting on Food Insecurity: Tips and Tools for Journalists
+2. 4 Tips to Investigate Food Insecurity, With Thin Lei Win
+3. How to Investigate the Global Food System
+4. Food Insecurity: What Journalists Get Wrong (and How to Fix It)
+5. Thin Lei Win's Guide to Investigating Hunger
 Summary:
 In this masterclass, Thin Lei Win, lead reporter at Lighthouse Reports, shares \
 four key lessons for investigating hunger and the global food system.
@@ -102,7 +117,12 @@ World Resource Institute (https://www.wri.org/data), IPES-Food \
 --- Example B (tips_and_tools, quote-driven) ---
 Speaker: Susanne Reber, investigative reporter and podcast producer
 Proposed title: The Golden Rules of Investigative Podcasts
-YouTube title: Producing Investigative Podcasts: Tips from Susanne Reber
+YouTube titles (5 options):
+1. Producing Investigative Podcasts: Tips from Susanne Reber
+2. The Golden Rules of Investigative Podcasts
+3. How to Make a Compelling Investigative Podcast
+4. "If It's Not on Tape, It's Not Going in the Show" -- Susanne Reber's Podcast Rules
+5. 5 Steps to a Better Investigative Podcast
 Summary:
 In this Masterclass, investigative reporter and podcast producer Susanne \
 Reber shares key tips on how to investigate, write and produce a compelling \
@@ -118,8 +138,12 @@ make the show!"
 Speaker: Maria Ressa, co-founder of Rappler, 2021 Nobel Peace Prize laureate
 Proposed title: Radical Collaboration: The Antidote to Big Tech's Power by \
 Maria Ressa
-YouTube title: Maria Ressa on Radical Collaboration: Why It's the Antidote to \
-Big Tech
+YouTube titles (5 options):
+1. Maria Ressa on Radical Collaboration: Why It's the Antidote to Big Tech
+2. Maria Ressa: How Journalists Can Fight Back Against Big Tech
+3. Radical Collaboration: The Antidote to Big Tech's Power
+4. Nobel Laureate Maria Ressa on Defending Facts in the Age of Big Tech
+5. Why Maria Ressa Says Journalists Must Stop Competing and Start Collaborating
 Summary:
 In this masterclass, Maria Ressa, co-founder of Rappler and 2021 Nobel Peace \
 Prize laureate, shares practical insights on how journalists can respond to \
@@ -164,7 +188,13 @@ SUBMIT_SUMMARY_TOOL = {
                 "minItems": 2,
                 "maxItems": 3,
             },
-            "youtube_title": {"type": "string"},
+            "youtube_titles": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 5,
+                "maxItems": 5,
+                "description": "Exactly 5 distinct YouTube title options, strongest first.",
+            },
             "youtube_summary_paragraphs": {
                 "type": "array",
                 "items": {"type": "string"},
@@ -198,7 +228,7 @@ SUBMIT_SUMMARY_TOOL = {
             "speaker_role",
             "proposed_title",
             "summary_paragraphs",
-            "youtube_title",
+            "youtube_titles",
             "youtube_summary_paragraphs",
             "tools_mentioned",
         ],
